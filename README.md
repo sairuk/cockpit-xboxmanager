@@ -31,6 +31,7 @@ Passwords for the xbox ftp are stored in plain text, world readable, since these
 
 The Cockpit project by its very nature is intended for Systems Administation, it should not be exposed to the public internet
 
+## Example
 [![XBOX Manager - Manage Screen](https://github.com/sairuk/cockpit-xboxmanager/raw/main/assets/xboxmanager-manage.png "XBOX Manager - Manage Screen")](https://github.com/sairuk/cockpit-xboxmanage "XBOX Manager - Manage Screen")
 
 ## RetroNAS
