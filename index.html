@@ -1,0 +1,106 @@
+<html lang="en-us">
+<head>
+    <title translate="yes">XBOX Manager</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="../base1/cockpit.css" type="text/css" rel="stylesheet">
+    <link href="index.css" type="text/css" rel="stylesheet">
+    <script type="text/javascript" src="../base1/cockpit.js"></script>
+    <script type="text/javascript" src="../*/po.js"></script>
+    <script type="text/javascript" src="xboxmanager.js"></script>
+</head>
+<body id="retronas-page" class="pf-m-redhat-font">
+	<div id="retronas" class="ct-page-fill">
+		<section class="pf-c-page__main-nav">
+			<nav id="retronas-nav pf-c-nav pf-m-horizontal pf-m-tertiary">
+				<ul class="retronas-menu pf-c-nav__list">
+					<li id="rn-about" class="rn-menu-item pf-c-nav__item"><a href="#"><img src="an-xbox-logo.png"></img></li>
+					<li id="rn-config" class="rn-menu-item rn-menu-hover pf-c-nav__item"><a href="#">Config</a></li>
+					<li id="rn-install" class="rn-menu-item rn-menu-hover pf-c-nav__item"><a href="#">Install</a></li>
+					<li id="rn-manage" class="rn-menu-item rn-menu-hover pf-c-nav__item"><a href="#">Manage</a></li>
+					<li id="rn-log" class="rn-menu-item rn-menu-hover pf-c-nav__item"><a href="#">Log</a></li>
+				</ul>
+			</nav>
+		</section>
+		<section class="pf-c-page__main-section">
+			<div class="container-fluid centerme">
+				<!-- ABOUT PAGE -->
+				<div id="rn-about-page" class="rn-page-container rn-about centerme rn-show">
+					<img src="an-xbox-logo.png" alt="XBOX Manager Logo"></img>
+					<h2>XBOX Manager</h2>
+					<ul>
+						<li><a href="https://github.com/danmons/retronas" title="RetroNAS on Github" target="_blank">Github</a></li> | 
+						<li><a href="https://github.com/danmons/retronas/wiki" title="Read the Wiki" target="_blank">Wiki</a></li> | 
+						<li><a href="https://raw.githubusercontent.com/danmons/retronas/main/LICENSE" title="License" target="_blank">License</a></li>
+					</ul>
+					
+					<div id="team">
+						<div class="warning">This interface is a work in progress</div>
+						<ul>
+							<li>\_ <a href="https://twitter.com/_daemons" title="@_daemons" target="_blank">@_daemons</a></li> _/-\_ 
+							<li><a href="https://twitter.com/sairukau" title="@sairukau" target="_blank">@sairukau</a></li> _/
+						</ul>
+					</div>
+					<div id="version">alpha-0x.2022</div>
+				</div>
+
+				<!-- CONFIG PAGE -->
+				<div id="rn-config-page" class="rn-page-container rn-wide-view rn-hidden">
+					<h1>Configuration</h1>
+					<h3>XBOX</h3>
+					<div id="rn-xbox-user" class="rn-faux-form">Username:
+						<input id="s-user-name-input" placeholder="xbox"></input>
+					</div>
+					<div id="rn-xbox-password" class="rn-faux-form">Password:
+						<input id="s-update-passwd-input" type="password"></input>
+					</div>
+					<div id="rn-xbox-ip-address" class="rn-faux-form">IP Address:
+						<input id="s-ip-address-input"></input>
+					</div>
+					<div id="rn-xbox-type" class="rn-faux-form">Type:
+						<input id="s-set-xbox-install-type-input" disabled placeholder="games"></input>
+					</div>
+					<div id="rn-xbox-drive" class="rn-faux-form">Games Drive:
+						<input id="s-set-xbox-install-drive-input" placeholder="E"></input>
+					</div>
+
+					<div id="rn-xbox-directory" class="rn-faux-form">Games Directory:
+						<input id="s-set-xbox-install-dir-input" placeholder="games"></input>
+					</div>
+					<h3>Local</h3>
+					<div id="rn-local-games-directory" class="rn-faux-form">Games Directory:
+						<input id="s-set-local-install-dir-input"></input>
+					</div>
+					<div id="rn-local-mount-directory" class="rn-faux-form">Mount Directory:
+						<input id="s-set-local-mount-dir-input"></input>
+					</div>
+					<button id="x-update" class="rn-value-updater">Update</button>
+				</div>
+
+				<!-- INSTALL PAGE -->
+				<div id="rn-install-page" class="rn-page-container rn-wide-view rn-hidden">
+					<h1>Available</h1>
+					<div class="group-header"><b>Games</b></div>
+					<ul id="rn-install-list">
+						<!-- <li><div>GAME 01<button id="game-01" class="rn-installer">Install</button></div></li> -->
+					</ul>
+				</div>
+
+				<!-- UNINSTALL PAGE -->
+				<div id="rn-manage-page" class="rn-page-container rn-wide-view rn-hidden">
+					<h1>Installed</h1>
+					<div class="group-header"><b>Games</b></div>
+					<ul id="rn-manage-list">
+						<!-- <li><div>GAME 02<button id="game-02" class="rn-installer">Install</button></div></li> -->
+					</ul>
+				</div>
+
+				<!-- LOG PAGE -->
+				<div id="rn-log-page" class="rn-page-container rn-wide-view rn-hidden">
+					<h1>Log</h1>
+					<div id="log-area"></div>
+				</div>
+			</div>
+		</section>
+	</div>
+</body></html>
