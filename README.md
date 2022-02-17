@@ -7,7 +7,7 @@ This is a highly EXPERIMENTAL alpha version which is intended as a tech preview 
 
 ```
 # apt install -y curl
-# curl -O https://raw.githubusercontent.com/sairuk/xboxmanager/xboxmanager-install.sh
+# curl -O https://raw.githubusercontent.com/sairuk/cockpit-xboxmanager/main/xboxmanager-install.sh
 # chmod a+x ./xboxmanager-install.sh
 # ./xboxmanager-install.sh
 ```

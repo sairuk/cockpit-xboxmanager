@@ -15,7 +15,7 @@ apt-get install -y curlftpfs
 [ ! -d $COCKPIT ] && echo "Cockpit doesn't seem to be installed in $COCKPIT" && exit 1
 
 cd $COCKPIT
-git clone https://github.com/sairuk/cockpit-xboxmanager.git xboxmanager
+git clone https://github.com/sairuk/cockpit-xboxmanager.git ${APP}
 
 if [ $? -eq 0 ]
 then
@@ -23,8 +23,8 @@ then
     mkdir ${DATADIR}
     chmod 755 ${DATADIR}
 
-    cp xboxmanager.cfg ${DATADIR}
-    cp xboxmanager.sh ${DATADIR}
+    cp ${COCKPIT}/${APP}/xboxmanager.cfg ${DATADIR}
+    cp ${COCKPIT}/${APP}/xboxmanager.sh ${DATADIR}
 
     chmod 755 ${DATADIR}/xboxmanager.sh
     chmod 666 ${DATADIR}/xboxmanager.cfg
