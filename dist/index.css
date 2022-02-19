@@ -128,6 +128,18 @@ h1::after {
 
 }
 
+.dot {
+	float:right;
+	position:absolute;
+	height: 1em;
+	width: 1em;
+	right: 1em;
+	top: 2.5em;
+	background-color: rgb(195, 90, 20);
+	border-radius: 50%;
+	display: block;
+  }
+
 #rn-about-page img {
 	width:300px;
 	height:auto;

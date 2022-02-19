@@ -8,7 +8,7 @@
 # in install mode XISO is an iso
 #
 
-set -u
+#set -u
 
 IFS=$'\n'
 
@@ -28,7 +28,7 @@ usage $0
  -l local mount dir
  -a local iso archive dir 
  -x iso file to process
- -m mode of operation (un)install|list-(available|installed)|(u)mount
+ -m mode of operation (un)install|list-(available|installed)|(u)mount|status
 EOF
 exit
 }
@@ -86,43 +86,6 @@ do
   esac
 done
 
-function list_available {
-  local DIR=$1
-  ls -la "${DIR}" | awk '/^-/{print substr($0,index($0,$9))}'
-}
-
-function list_installed {
-  local DIR=$1
-  ls -la "${DIR}" | awk '/^d/{print substr($0,index($0,$9))}'
-}
-
-
-function mount_ftp {
-  # mount the ftp locally
-  $CURLFTPFS -o ${CURLFTPFS_OPT} "${X_USER}:${X_PASS}@${X_IPADD}" "${DIR_MOUNT}"
-  [ ! -d "${DIR_MOUNT}/${DIR_FTP}" ] && echo "Mount operation appears to have failed, couldn't find ${DIR_FTP}" && exit 1
-}
-
-
-function unmount_ftp {
-  # kill the ftp, we could probably target this better
-  kill $(pidof $CURLFTPFS)
-}
-
-function repack_iso {
-  local BACKUP_PATH="${1}"
-  _log "REPACK"
-  OUTPUT_FILE="${DIR_ARCHIVE}/${XISO}.iso"
-  if [ ! -f "${OUTPUT_FILE}" ]
-  then
-    mount_ftp
-    ${EXTRACTXISO} -Q -c "${BACKUP_PATH}" "${DIR_ARCHIVE}/${XISO}.iso"
-    unmount_ftp
-  else
-    _log "File exists, will not overwrite, remove it first"
-  fi
-}
-
 CURLFTPFS=$(which curlftpfs)
 EXTRACTXISO=$(which extract-xiso)
 CURLFTPFS_OPT=auto_unmount
@@ -145,10 +108,65 @@ DIR_TMPA="${DIR_TMP}/${DIR_NAME}"
 # curlftpfs has issues with double fslash // so replace em with a single
 INSTALL_PATH=$( echo "${DIR_MOUNT}/${DIR_FTP}/${DIR_TYPE}" | sed 's/\/\//\//g')
 
+
+function list_available {
+  local DIR=$1
+  ls -la "${DIR}" 2>/dev/null | awk '/^-/{print substr($0,index($0,$9))}'
+}
+
+function list_installed {
+  local DIR=$1
+  ls -la "${DIR}" 2>/dev/null  | awk '/^d/{print substr($0,index($0,$9))}'
+}
+
+function mount_ftp {
+  # mount the ftp locally if its not mounted already
+  if [ ! -d "${DIR_MOUNT}/${DIR_FTP}" ]
+  then
+    $CURLFTPFS -o ${CURLFTPFS_OPT} "${X_USER}:${X_PASS}@${X_IPADD}" "${DIR_MOUNT}"
+    [ $? -ne 0 ] && echo "Mount operation appears to have failed, couldn't find ${DIR_FTP}" && exit 1
+  fi
+}
+
+function unmount_ftp {
+  # kill the ftp, we could probably target this better
+  local PID=$(pidof $CURLFTPFS)
+  [ ! -z "${PID}" ] && kill $PID
+}
+
+function repack_iso {
+  local BACKUP_PATH="${1}"
+  _log "REPACK"
+  OUTPUT_FILE="${DIR_ARCHIVE}/${XISO}.iso"
+  if [ ! -f "${OUTPUT_FILE}" ]
+  then
+    mount_ftp
+    ${EXTRACTXISO} -Q -c "${BACKUP_PATH}" "${DIR_ARCHIVE}/${XISO}.iso"
+    unmount_ftp
+  else
+    _log "File exists, will not overwrite, remove it first"
+  fi
+}
+
+# basic status check for xbox availablity
+function check_status {
+  local IP_ADDR="${1}"
+  ping -c 1 -q -n -W 1 $IP_ADDR &>/dev/null
+  if [ $? -eq 0 ]
+  then
+    mount_ftp
+    exit 0
+  else
+    unmount_ftp
+    exit 1
+  fi
+}
+
+
 case $MODE in
   install)
     _log "install"
-    mount_ftp
+    #mount_ftp
     [ ! -f "${DIR_ARCHIVE}/${XISO}" ] && echo "Couldn't locate iso file to install" && exit 1
     ${EXTRACTXISO} "${DIR_ARCHIVE}/${XISO}" -s -Q -d "${DIR_TMP}/${DIR_NAME}"
     if [ $? -eq 0 ]
@@ -157,13 +175,13 @@ case $MODE in
       cp -R "${DIR_TMPA}" "${INSTALL_PATH}" 2>/dev/null
       [ -d "${DIR_TMPA}" ] && rm -R "${DIR_TMPA}"
     fi
-    unmount_ftp
+    #unmount_ftp
     ;;
   uninstall)
     _log "uninstall"
-    mount_ftp
+    #mount_ftp
     [ -d "${INSTALL_PATH}/${DIR_NAME}" ] && rm -R "${INSTALL_PATH}/${DIR_NAME}"
-    unmount_ftp
+    #unmount_ftp
     ;;
   list-available)
     #echo "list-available"
@@ -171,9 +189,9 @@ case $MODE in
     ;;
   list-installed)
     #echo "list-installed"
-    mount_ftp
+    #mount_ftp
     list_installed "${DIR_MOUNT}/${DIR_FTP}/${DIR_TYPE}"
-    unmount_ftp
+    #unmount_ftp
     ;;
   mount)
     mount_ftp
@@ -183,6 +201,9 @@ case $MODE in
     ;;
   backup)
     repack_iso "${INSTALL_PATH}/${DIR_NAME}"
+    ;;
+  status)
+    check_status "${X_IPADD}"
     ;;
 esac
 

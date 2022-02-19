@@ -7,9 +7,10 @@
 //
 // - sairuk
 
-var xboxmanager = "/opt/xboxmanager/xboxmanager.sh";
+var xboxmanager = "/opt/xboxmanager/scripts/xboxmanager.sh";
 var xboxconfig = "/opt/xboxmanager/xboxmanager.cfg";
 let rn_settings = new Object();
+var last_state = 1; // 1: disconnected, 0: connected
 
 // update log window
 function _log(output) {
@@ -19,7 +20,7 @@ function _log(output) {
 
 function loading(id) {
     document.getElementById(id).innerHTML = "";
-    document.getElementById(id).innerHTML = '<img src="loading.gif" class="loading"></img>';
+    document.getElementById(id).innerHTML = '<img src="assets/loading.gif" class="loading"></img>';
 }
 
 
@@ -258,6 +259,38 @@ function backup_xbox() {
     });
 }
 
+function check_status() {
+
+    var cmd_os = install_options("status");
+
+
+    cockpit.spawn(cmd_os, {"err": "out"}).done(function(data) {
+        returned = new String(data);
+        //console.log(returned);
+        _log(returned);
+        //console.log(returned);
+        document.getElementById("status").style.backgroundColor = '#497c50';
+        document.getElementById("status").title = 'Connected';
+        if ( last_state == 1 )
+        {
+            last_state = 0;
+            list_installed();
+        }
+        //console.log("ON");
+
+    }).fail(function(error){
+        returned = new String(error);
+        console.log(error);
+        _log(returned);
+        //alert("Failed, please check log screen");
+        document.getElementById("status").style.backgroundColor = 'rgb(228, 37, 37)';
+        document.getElementById("status").title = 'Disconnected';
+        last_state = 1;
+        //console.log("OFF");
+    });
+
+}
+
 // read in the ansible config convert from ansible object to javascript object
 // this is used
 function read_ansible_cfg() {
@@ -364,6 +397,11 @@ window.onload = function() {
     menuitems.forEach(menuitem=>{
         menuitem.addEventListener("click", show_page);
     })
+
+    // this is out poll timer
+    var pollDevice = setInterval(()=>{
+        check_status();
+    },5000);
 
     document.getElementById('x-update').addEventListener("click", write_ansible_cfg);
     
