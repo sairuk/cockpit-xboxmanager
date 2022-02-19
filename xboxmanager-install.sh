@@ -29,8 +29,8 @@ fi
 [ ! -d ${SCRIPTDIR} ] && mkdir -p ${SCRIPTDIR}
 find ${DATADIR} -type d -exec chmod 755 {} \;
 
-cp ${COCKPIT}/${APP}/dist/xboxmanager.cfg ${DATADIR}
-cp ${COCKPIT}/${APP}/scripts/xboxmanager.sh ${DATADIR}/${SCRIPTDIR}
+cp ${COCKPIT}/${APP}/dist/xboxmanager.cfg ${DATADIR}/
+cp ${COCKPIT}/${APP}/scripts/xboxmanager.sh ${SCRIPTDIR}/
 
 chmod 755 ${SCRIPTDIR}/xboxmanager.sh
 chmod 666 ${DATADIR}/xboxmanager.cfg
