@@ -180,7 +180,7 @@ case $MODE in
   uninstall)
     _log "uninstall"
     #mount_ftp
-    [ -d "${INSTALL_PATH}/${DIR_NAME}" ] && rm -R "${INSTALL_PATH}/${DIR_NAME}"
+    [ -f "${INSTALL_PATH}/${DIR_NAME}/default.xbe" ] && rm -R "${INSTALL_PATH}/${DIR_NAME}"
     #unmount_ftp
     ;;
   list-available)
