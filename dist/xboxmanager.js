@@ -1,4 +1,4 @@
-//                            __________________________
+//                      ______________
 //                 .-:=[ XBOX Manager ]=:-.
 //
 // Install/Uninstall games over FTP to xbox
@@ -16,7 +16,6 @@ var last_state = 1; // 1: disconnected, 0: connected
 function _log(output) {
     document.getElementById("log-area").innerText = output;
 }
-
 
 function loading(id) {
     document.getElementById(id).innerHTML = "";
@@ -44,18 +43,49 @@ function install_options(mode="list-available", xiso=false) {
 
 };
 
-// list-available
-function list_available() {
+// generic function to get mode data
+function rn_method(id, mode) {
+    console.log(mode+"_xbox");
 
-    const install_list = document.getElementById('rn-install-list');
-    install_list.replaceChildren();
+    var target = document.getElementById(id).parentNode.firstElementChild.innerText;
+    var cmd_os = install_options(mode).concat(['-x',target]);
 
-    var cmd_os = install_options();
-    //console.log(cmd_os);
+    target_id = target.replace(/[_\s]+/g, '-');
 
-    cockpit.spawn(cmd_os, {"err": "out"}).done(function(data) {
+    var target_elem = mode+"-"+target_id;
+
+    var current = document.getElementById(target_elem).innerHTML;
+    loading(target_elem);
+
+    cockpit.spawn(cmd_os, {"err": "out"
+
+    }).done(function(data) {
         returned = new String(data);
-        //console.log(returned);
+        _log(returned);
+        list_installed();
+        document.getElementById(target_elem).innerHTML = current;
+
+    }).fail(function(error){
+        returned = new String(error);
+        console.log(error);
+        _log(returned);
+        document.getElementById(target_elem).innerHTML = current;
+    });
+
+}
+
+// generic function for returning lists
+function rn_get_lists(mode, text) {
+
+    const method_list = document.getElementById('rn-'+mode+'-list');
+    method_list.replaceChildren();
+
+    var cmd_os = install_options(mode);
+
+    cockpit.spawn(cmd_os, {"err": "out"
+
+    }).done(function(data) {
+        returned = new String(data);
         _log(returned);
 
         var items = returned.split('\n');
@@ -65,228 +95,91 @@ function list_available() {
 
                 element_name = item.replace(/[_\s]+/g, '-');
 
-                const install_li = document.createElement('li');
-                const install_div = document.createElement('div');
-                const install_span = document.createElement('span');
-                const install_button = document.createElement('button');
+                const method_li = document.createElement('li');
+                const method_div = document.createElement('div');
+                const method_span = document.createElement('span');
+                const method_button = document.createElement('button');
 
-                install_list.appendChild(install_li);
-                install_li.appendChild(install_div);
-                install_span.innerText = item;
-                install_div.appendChild(install_span);
-                install_div.appendChild(install_button);
+                method_list.appendChild(method_li);
+                method_li.appendChild(method_div);
+                method_span.innerText = item;
+                method_div.appendChild(method_span);
+                method_div.appendChild(method_button);
 
-                install_button.id = ("install-"+element_name);
-                install_button.classList = "rn-installer";
-                install_button.innerText = "Install";
-                install_button.addEventListener("click", install_xbox);
+                
+                mode_button=element_name;
+                method_button.innerText = text;
+
+                if ( mode == "list-available" )
+                {
+                    mode_button = "install";
+                    method_button.classList = "rn-install";
+                    method_button.id = ("install-"+element_name);
+                    method_button.addEventListener("click", install_xbox);
+                } else if ( mode == "list-installed" ) {
+                    mode_button = "uninstall";
+                    method_button.addEventListener("click", uninstall_xbox);
+
+                    // add a backup button
+                    const backup_button = document.createElement('button');
+                    method_div.appendChild(backup_button);
+                    backup_button.id = "backup-"+element_name;
+                    backup_button.classList = "rn-manager";
+                    backup_button.innerText = "Backup";
+                    backup_button.addEventListener("click", backup_xbox);
+                }
+
+                method_button.classList = "rn-"+mode_button;
+                method_button.id = (mode_button+"-"+element_name);
             }
-
         })
-
-        //console.log(returned);
-
     }).fail(function(error){
         returned = new String(error);
         console.log(error);
         _log(returned);
-        //alert("Failed, please check log screen");
     });
+
 }
+
+// list-available
+function list_available() { rn_get_lists('list-available', "Install"); }
 
 // list-installed
-function list_installed() {
-
-    // remove old data
-    const install_list = document.getElementById('rn-manage-list');
-    //const installers = document.getElementsByClassName('rn-installer');
-    install_list.replaceChildren();
-
-    cmd_os = install_options("list-installed");
-    //console.log(cmd_os);
-
-    cockpit.spawn(cmd_os, {"err": "out"}).done(function(data) {
-        returned = new String(data);
-        //console.log(returned);
-        _log(returned);
-
-        var items = returned.split('\n');
-
-        items.forEach(item=>{
-
-            if ( item !== "" ) {
-
-                element_name = item.replace(/[_\s]+/g, '-');
-
-                const install_li = document.createElement('li');
-                const install_div = document.createElement('div');
-                const install_span = document.createElement('span');
-                const uninstall_button = document.createElement('button');
-                const backup_button = document.createElement('button');
-
-                install_list.appendChild(install_li);
-                install_li.appendChild(install_div);
-                install_span.innerText = item;
-                install_div.appendChild(install_span);
-                install_div.appendChild(uninstall_button);
-
-                uninstall_button.id = "uninstall-"+element_name;
-                uninstall_button.classList = "rn-manager";
-                uninstall_button.innerText = "Uninstall";
-                uninstall_button.addEventListener("click", uninstall_xbox);
-
-                install_div.appendChild(backup_button);
-                backup_button.id = "backup-"+element_name;
-                backup_button.classList = "rn-manager";
-                backup_button.innerText = "Backup";
-                backup_button.addEventListener("click", backup_xbox);
-            }
-
-        })
-
-    }).fail(function(error){
-        returned = new String(error);
-        console.log(error);
-        _log(returned);
-        //alert("Failed, please check log screen");
-    });
-}
-
+function list_installed() { rn_get_lists("list-installed", "Uninstall"); }
 
 // install
-function install_xbox() {
-    console.log("install_xbox");
-    //console.log(rn_settings);
-
-    var target = this.parentNode.firstElementChild.innerText;
-    var cmd_os = install_options("install").concat(['-x',target]);
-
-    //console.log(cmd_os);
-    target_id = target.replace(/[_\s]+/g, '-');
-    //console.log(target_id);
-
-    var target_elem = "install-"+target_id;
-
-    var current = document.getElementById(target_elem).innerHTML;
-    loading(target_elem);
-
-    cockpit.spawn(cmd_os, {"err": "out"}).done(function(data) {
-        returned = new String(data);
-        //console.log(returned);
-        _log(returned);
-        //console.log(returned);
-        list_installed();
-        document.getElementById(target_elem).innerHTML = current;
-
-        // refresh lists
-
-    }).fail(function(error){
-        returned = new String(error);
-        console.log(error);
-        _log(returned);
-        //alert("Failed, please check log screen");
-        document.getElementById(target_elem).innerHTML = current;
-    });
-
-}
+function install_xbox() { rn_method(this.id, 'install'); }
 
 // uninstall
-function uninstall_xbox() {
-    console.log("uninstall_xbox");
-    //console.log(rn_settings);
-
-    var target = this.parentNode.firstElementChild.innerText;
-
-    var cmd_os = install_options("uninstall").concat(['-x',target]);
-    target_id = target.replace(/[_\s]+/g, '-');
-    //console.log(cmd_os);
-
-    var target_elem = "uninstall-"+target_id;
-
-    var current = document.getElementById(target_elem).innerHTML;
-    loading(target_elem);
-
-    cockpit.spawn(cmd_os, {"err": "out"}).done(function(data) {
-        returned = new String(data);
-        //console.log(returned);
-        _log(returned);
-        //console.log(returned);
-        document.getElementById(target_elem).innerHTML = current;
-        list_installed();
-
-        // refresh lists
-
-    }).fail(function(error){
-        returned = new String(error);
-        console.log(error);
-        _log(returned);
-        //alert("Failed, please check log screen");
-        document.getElementById(target_elem).innerHTML = current;
-    });
-
-}
+function uninstall_xbox() { rn_method(this.id, 'uninstall'); }
 
 // backup
-function backup_xbox() {
-    console.log("backup_xbox");
-
-    var target = this.parentNode.firstElementChild.innerText;
-    var cmd_os = install_options("backup").concat(['-x',target]);
-
-    target_id = target.replace(/[_\s]+/g, '-');
-    //console.log(cmd_os);
-    var target_elem = "backup-"+target_id;
-
-    var current = document.getElementById(target_elem).innerHTML;
-    loading(target_elem);
-
-    cockpit.spawn(cmd_os, {"err": "out"}).done(function(data) {
-        returned = new String(data);
-        //console.log(returned);
-        _log(returned);
-        //console.log(returned);
-        list_installed();
-        document.getElementById(target_elem).innerHTML = current;
-
-        // refresh lists
-
-    }).fail(function(error){
-        returned = new String(error);
-        console.log(error);
-        _log(returned);
-        //alert("Failed, please check log screen");
-        document.getElementById(target_elem).innerHTML = current;
-    });
-}
+function backup_xbox() { rn_method(this.id, 'backup'); }
 
 function check_status() {
+    mode = "status";
 
-    var cmd_os = install_options("status");
+    var cmd_os = install_options(mode);
 
+    cockpit.spawn(cmd_os, {"err": "out"
 
-    cockpit.spawn(cmd_os, {"err": "out"}).done(function(data) {
+    }).done(function(data) {
         returned = new String(data);
-        //console.log(returned);
         _log(returned);
-        //console.log(returned);
-        document.getElementById("status").style.backgroundColor = '#497c50';
-        document.getElementById("status").title = 'Connected';
+        document.getElementById(mode).style.backgroundColor = '#497c50';
+        document.getElementById(mode).title = 'Connected';
         if ( last_state == 1 )
         {
             last_state = 0;
             list_installed();
         }
-        //console.log("ON");
-
     }).fail(function(error){
         returned = new String(error);
         console.log(error);
         _log(returned);
-        //alert("Failed, please check log screen");
-        document.getElementById("status").style.backgroundColor = 'rgb(228, 37, 37)';
-        document.getElementById("status").title = 'Disconnected';
+        document.getElementById(mode).style.backgroundColor = 'rgb(228, 37, 37)';
+        document.getElementById(mode).title = 'Disconnected';
         last_state = 1;
-        //console.log("OFF");
     });
 
 }
@@ -410,4 +303,4 @@ window.onload = function() {
 }
 
 // nfi what this does, remove it and see what breaks at some point
-cockpit.transport.wait(function() { })
+//cockpit.transport.wait(function() { })

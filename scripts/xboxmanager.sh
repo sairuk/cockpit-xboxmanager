@@ -140,9 +140,7 @@ function repack_iso {
   OUTPUT_FILE="${DIR_ARCHIVE}/${XISO}.iso"
   if [ ! -f "${OUTPUT_FILE}" ]
   then
-    mount_ftp
     ${EXTRACTXISO} -Q -c "${BACKUP_PATH}" "${DIR_ARCHIVE}/${XISO}.iso"
-    unmount_ftp
   else
     _log "File exists, will not overwrite, remove it first"
   fi
