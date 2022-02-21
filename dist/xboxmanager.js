@@ -54,7 +54,8 @@ function rn_method(id, mode) {
 
     var target_elem = mode+"-"+target_id;
 
-    var current = document.getElementById(target_elem).innerHTML;
+    var restore = document.getElementById(target_elem);
+    var current = restore.innerHTML;
     loading(target_elem);
 
     cockpit.spawn(cmd_os, {"err": "out"
@@ -62,22 +63,22 @@ function rn_method(id, mode) {
     }).done(function(data) {
         returned = new String(data);
         _log(returned);
-        list_installed();
-        document.getElementById(target_elem).innerHTML = current;
 
     }).fail(function(error){
         returned = new String(error);
         console.log(error);
         _log(returned);
-        document.getElementById(target_elem).innerHTML = current;
     });
 
+    // refresh views
+    list_installed();
+    list_available()
 }
 
 // generic function for returning lists
 function rn_get_lists(mode, text) {
 
-    const method_list = document.getElementById('rn-'+mode+'-list');
+    var method_list = document.getElementById('rn-'+mode+'-list');
     method_list.replaceChildren();
 
     var cmd_os = install_options(mode);
