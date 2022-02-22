@@ -34,5 +34,6 @@ find ${DATADIR} -type d -exec chmod 755 {} \;
 cp dist/* ${COCKPIT}/${APP}/
 cp -R assets ${COCKPIT}/${APP}/
 
+cp ${DATADIR}/xboxmanager.cfg.example ${DATADIR}/xboxmanager.cfg
 chmod 755 ${SCRIPTDIR}/xboxmanager.sh
 chmod 666 ${DATADIR}/xboxmanager.cfg
