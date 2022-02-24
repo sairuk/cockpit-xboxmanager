@@ -1,4 +1,4 @@
-# Cockpit XBOX ISO Manager
+# Cockpit XBOX ISO Manager (cXBm)
 Manage XBOX games through a Cockpit interface
 
 This is a highly EXPERIMENTAL alpha version which is intended as a tech preview for what should become a generalised ftp management solution for retro hardware through a webui.
