@@ -30,7 +30,7 @@ usage $0
  -x iso file to process
  -m mode of operation (un)install|list-(available|installed)|(u)mount|status
 EOF
-exit
+exit 1
 }
 
 ### CONVERT these to getopts
@@ -89,6 +89,9 @@ done
 CURLFTPFS=$(which curlftpfs)
 EXTRACTXISO=$(which extract-xiso)
 CURLFTPFS_OPT=auto_unmount
+
+# should have at least one arg, probably many more
+[ $# <= 1 ] && _usage
 
 REQFAIL=0
 [ -z $CURLFTPFS ] && echo "Couldn't find curlftpfs, can't help you bro" && REQFAIL=1
