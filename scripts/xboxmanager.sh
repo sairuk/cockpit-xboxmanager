@@ -91,7 +91,7 @@ EXTRACTXISO=$(which extract-xiso)
 CURLFTPFS_OPT=auto_unmount
 
 # should have at least one arg, probably many more
-[ $# <= 1 ] && _usage
+[ $# -le 1 ] && _usage
 
 REQFAIL=0
 [ -z $CURLFTPFS ] && echo "Couldn't find curlftpfs, can't help you bro" && REQFAIL=1
