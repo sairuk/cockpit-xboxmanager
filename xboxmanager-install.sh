@@ -12,8 +12,8 @@ DATADIR=/opt/${APP}
 SCRIPTDIR=${DATADIR}/scripts
 COCKPIT=/usr/share/cockpit
 
-apt-get update
-apt-get install -y curlftpfs
+apt-get update &>/dev/null
+apt-get install -y curlftpfs &>/dev/null
 
 [ ! -d $COCKPIT ] && echo "Cockpit doesn't seem to be installed in $COCKPIT" && exit 1
 
