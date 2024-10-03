@@ -222,14 +222,14 @@ function write_ansible_cfg() {
         { syntax: JSON,
             binary: false,
             max_read_size: 512,
-            superuser: false
+            superuser: true
         }).replace(rn_settings)
        .then((content, tag) => {
             read_ansible_cfg();
         })
         .catch(error => {
             console.log(error);
-            var msg = "Failed to read config file";
+            var msg = "Failed to write config file, become admin and attempt this operation again";
             alert(msg);
             _log(msg)
         });
